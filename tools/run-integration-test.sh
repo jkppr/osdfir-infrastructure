@@ -33,7 +33,7 @@ kubectl --namespace default port-forward service/$RELEASE-timesketch 5000:5000 >
 kubectl --namespace default port-forward service/$RELEASE-turbinia 8000:8000  > /dev/null 2>&1 &
 
 # Back up existing Timesketch configs else script will attempt to connect to wrong Timesketch instance
-if  [ -f ~/.timesketchrc ] && [ -f ~/.timesketch.token ] 
+if  [ -f ~/.timesketchrc ] && [ -f ~/.timesketch.token ]
 then
     echo "Backing up existing Timesketch configs to ~/.timesketchrc.$DATE and ~/.timesketch.token.$DATE"
     mv ~/.timesketchrc ~/.timesketchrc.$DATE
@@ -65,7 +65,7 @@ then
 fi
 
 # Replace Turbinia config with test config
-echo "Writing turbinia config to $HOME/.turbinia_api_config.json..."
+echo "Writing turbinia config to $HOME/.turbinia_api_config.json ..."
 cat > $HOME/.turbinia_api_config.json <<EOL
 {
 	"default": {
@@ -79,7 +79,30 @@ cat > $HOME/.turbinia_api_config.json <<EOL
 }
 EOL
 
+# Back up existing dftw Turbinia config else script will attempt to connect to wrong Turbinia instance
+if  [ -f ~/.dftimewolf_turbinia_secrets.json ]
+then
+  echo "Backing up existing Turbinia config to ~/.dftimewolf_turbinia_secrets.json.$DATE"
+  mv ~/.dftimewolf_turbinia_secrets.json ~/.dftimewolf_turbinia_secrets.json.$DATE
+fi
+
+# Replace dftw Turbinia config with test config
+echo "Writing turbinia config to $HOME/.dftimewolf_turbinia_secrets.json ..."
+cat > $HOME/.dftimewolf_turbinia_secrets.json <<EOL
+{
+	"default": {
+		"description": "DFTW Turbinia client test config",
+		"API_SERVER_ADDRESS": "http://127.0.0.1",
+		"API_SERVER_PORT": 8000,
+		"API_AUTHENTICATION_ENABLED": false,
+		"CLIENT_SECRETS_FILENAME": ".client_secrets.json",
+		"CREDENTIALS_FILENAME": ".credentials_default.json"
+	}
+}
+EOL
+
 # Ensure connection is stable before running test
+echo "Test turbinia client connection ..."
 turbinia-client status summary
 if [ $? != "0" ]
 then
@@ -87,6 +110,7 @@ then
   kubectl --namespace default port-forward service/$RELEASE-turbinia 8000:8000  > /dev/null 2>&1 &
 fi
 
+echo "Test Timesketch client connection ..."
 timesketch timelines
 if [ $? != "0" ]
 then
@@ -101,7 +125,7 @@ set -e
 echo "Running dfTimewolf recipe: dftimewolf gcp_turbinia_ts $GCP_PROJECT $GCP_ZONE --disk_names $DISK --incident_id test213 --timesketch_username timesketch --timesketch_password TS_SECRET"
 export DFTIMEWOLF_NO_CURSES=1
 dftimewolf gcp_turbinia_ts $GCP_PROJECT $GCP_ZONE --disk_names $DISK --incident_id test213 --timesketch_username timesketch --timesketch_password $TS_SECRET
-echo "dfTimewolf recipe succeeded!" 
+echo "dfTimewolf recipe succeeded!"
 
 # Turbinia integration test
 echo "Starting integration test for Turbinia..."
@@ -137,7 +161,7 @@ do
       if [ -n $wlogs ] && [ -n  $server ]
       then
         echo "Grabbing logs for Turbinia worker $worker"
-        kubectl exec $server -- cat $wlogs 
+        kubectl exec $server -- cat $wlogs
       fi
     done
   # If no failed Plaso Tasks were detected
