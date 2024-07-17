@@ -7,6 +7,9 @@ global:
   ## @param global.selfManagedMysql Enables a mySQL DB containter to be deployed into the cluster.
   ##
   selfManagedMysql: true
+  ## @param global.useResourceRequests Allocates resources to the pods.
+  ##
+  useResourceRequests: false
 
 ## @section Fleetspeak parameters
 ##
@@ -27,7 +30,7 @@ fleetspeak:
   admin:
     ## @param fleetspeak.admin.image Sets the Fleetspeak admin container image to use.
     ##
-    image: "ghcr.io/google/fleetspeak:cl-616106372"
+    image: "ghcr.io/google/fleetspeak:v0.1.15"
     ## @param fleetspeak.admin.listenPort Sets the Fleetspeak admin listen port to use.
     ##
     listenPort: 4444
@@ -41,7 +44,7 @@ fleetspeak:
     healthCheckPort: 8080
     ## @param fleetspeak.frontend.image Sets the Fleetspeak fronend container image to use.
     ##
-    image: "ghcr.io/google/fleetspeak:cl-616106372"
+    image: "ghcr.io/google/fleetspeak:v0.1.15"
     ## @param fleetspeak.frontend.listenPort Sets the Fleetspeak frontend listen port to use.
     ##
     listenPort: 4443
@@ -76,19 +79,15 @@ fleetspeak:
 ## @section GRR parameters
 ##
 grr:
-  ## @param grr.generateCert Enables the generation of self-signed GRR x509 certificate.
+  ## @param grr.generateExecutableSigningCert Enables the generation of self-signed executable signging certificate.
   ## ref https://helm.sh/docs/chart_template_guide/function_list/#genselfsignedcert
   ##
-  generateCert: true
-  ## @param grr.subjectCommonName Sets the GRR x509 certificate subject common name.
-  ## ref https://helm.sh/docs/chart_template_guide/function_list/#genselfsignedcert
-  ##
-  subjectCommonName: "grr-frontend"
+  generateExecutableSigningCert: true
 
   admin:
     ## @param grr.admin.image Sets the GRR admin container image to use.
     ##
-    image: "ghcr.io/google/grr:latest"
+    image: "ghcr.io/google/grr:v3.4.7.4-release"
     ## @param grr.admin.listenPort Sets the GRR admin listen port to use.
     ##
     listenPort: 8000
@@ -105,7 +104,7 @@ grr:
   frontend:
     ## @param grr.frontend.image Sets the GRR frontend container image to use.
     ##
-    image: "ghcr.io/google/grr:latest"
+    image: "ghcr.io/google/grr:v3.4.7.4-release"
     ## @param grr.frontend.listenPort Sets the GRR frontend listen port to use.
     ##
     listenPort: 11111
@@ -131,7 +130,7 @@ grr:
   worker:
     ## @param grr.worker.image Sets the GRR worker container image to use.
     ##
-    image: "ghcr.io/google/grr:latest"
+    image: "ghcr.io/google/grr:v3.4.7.4-release"
 
 ## @section Prometheus parameters
 ##
